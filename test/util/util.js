@@ -1,33 +1,32 @@
-var Vantage = require('../../');
-var _ = require('lodash');
-var path = require('path');
+import Vorpal from '../../lib/vorpal.js'
+import path from 'node:path'
 
-module.exports = {
+const instances = []
 
-  instances: [],
+export default {
+  instances,
 
-  spawn: function (options, cb) {
-    options = options || {};
-    options = _.defaults(options, {
+  spawn (options, cb) {
+    options = options || {}
+    options = Object.assign({
       ports: [],
       ssl: false
-    });
+    }, options)
 
-    for (var i = 0; i < options.ports.length; ++i) {
-      var vorpal = new Vantage();
-      var port = options.ports[i];
+    for (let i = 0; i < options.ports.length; ++i) {
+      const vorpal = new Vorpal()
+      const port = options.ports[i]
       vorpal
         .delimiter(port + ':')
-        .use(path.join(__dirname, '/server'))
-        .listen(port);
-      module.exports.instances.push(vorpal);
+        .use(path.join(import.meta.dirname, '/server'))
+        .listen(port)
+      instances.push(vorpal)
     }
 
-    cb(undefined, module.exports.instances);
-    return;
+    cb(undefined, instances)
   },
 
-  kill: function (what, cb) {
-    cb = cb || function () {};
+  kill (what, cb) {
+    cb = cb || function () {}
   }
-};
+}
