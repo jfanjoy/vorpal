@@ -1,3 +1,4 @@
+import { describe, it, before, after, afterEach } from 'node:test'
 import Vorpal from '../lib/vorpal.js'
 import assert from 'node:assert/strict'
 import intercept from '../lib/intercept.js'
@@ -23,7 +24,7 @@ const vorpal = new Vorpal()
 
 describe('integration tests:', function () {
   describe('vorpal', function () {
-    it('should overwrite duplicate commands', function (done) {
+    it('should overwrite duplicate commands', function (t, done) {
       const arr = ['a', 'b', 'c']
       arr.forEach(function (item) {
         vorpal
@@ -49,7 +50,7 @@ describe('integration tests:', function () {
       })
     })
 
-    it('should register and execute aliases', function (done) {
+    it('should register and execute aliases', function (t, done) {
       vorpal
         .command('i go by other names', 'This command has many aliases.')
         .alias('donald trump')
@@ -77,7 +78,7 @@ describe('integration tests:', function () {
       go()
     })
 
-    it('should fail on duplicate alias', function (done) {
+    it('should fail on duplicate alias', function (t, done) {
       assert.throws(function () {
         vorpal
           .command('This command should crash!', 'Any moment now...')
@@ -88,7 +89,7 @@ describe('integration tests:', function () {
       done()
     })
 
-    it('should validate arguments', function (done) {
+    it('should validate arguments', function (t, done) {
       const errorThrown = new Error('Invalid Argument')
       vorpal
         .command('validate-me [arg]', 'This command only allows argument "valid"')
@@ -114,7 +115,7 @@ describe('integration tests:', function () {
   })
 
   describe('vorpal execution', function () {
-    before('preparation', function () {
+    before(function () {
       vorpal.pipe(onStdout).use(commands)
     })
 
@@ -132,7 +133,7 @@ describe('integration tests:', function () {
     }
 
     describe('promise execution', function () {
-      it('should not fail', function (done) {
+      it('should not fail', function (t, done) {
         vorpal.exec('fail me not').then(function () {
           assert.ok(true)
           done()
@@ -144,7 +145,7 @@ describe('integration tests:', function () {
         })
       })
 
-      it('should fail', function (done) {
+      it('should fail', function (t, done) {
         vorpal.exec('fail me yes').then(function () {
           assert.ok(false)
           done()
@@ -156,21 +157,21 @@ describe('integration tests:', function () {
     })
 
     describe('command execution', function () {
-      it('should execute a simple command', function (done) {
+      it('should execute a simple command', function (t, done) {
         exec('fuzzy', done, function (err) {
           assert.equal(getStdout(), 'wuzzy')
           done(err)
         })
       })
 
-      it('should execute help', function (done) {
+      it('should execute help', function (t, done) {
         exec('help', done, function (err) {
           assert.ok(String(getStdout()).toLowerCase().includes('help'))
           done(err)
         })
       })
 
-      it('should chain two async commands', function (done) {
+      it('should chain two async commands', function (t, done) {
         vorpal.exec('foo').then(function () {
           assert.equal(getStdout(), 'bar')
           return vorpal.exec('fuzzy')
@@ -183,14 +184,14 @@ describe('integration tests:', function () {
         })
       })
 
-      it('should execute a two-word-deep command', function (done) {
+      it('should execute a two-word-deep command', function (t, done) {
         exec('deep command arg', done, function (err) {
           assert.equal(getStdout(), 'arg')
           done(err)
         })
       })
 
-      it('should execute a three-word-deep command', function (done) {
+      it('should execute a three-word-deep command', function (t, done) {
         exec('very deep command arg', done, function (err) {
           assert.equal(getStdout(), 'arg')
           done(err)
@@ -222,7 +223,7 @@ describe('integration tests:', function () {
     })
 
     describe('.command.help', function () {
-      it('should execute a custom help command.', function (done) {
+      it('should execute a custom help command.', function (t, done) {
         exec('custom-help --help', done, function (err) {
           assert.ok(String(getStdout()).includes('This is a custom help output.'))
           done(err)
@@ -231,7 +232,7 @@ describe('integration tests:', function () {
     })
 
     describe('.command.parse', function () {
-      it('should add on details to an existing command.', function (done) {
+      it('should add on details to an existing command.', function (t, done) {
         exec('parse me in-reverse', done, function (err) {
           assert.ok(String(getStdout()).includes('esrever-ni'))
           done(err)
@@ -240,35 +241,35 @@ describe('integration tests:', function () {
     })
 
     describe('piped commands', function () {
-      it('should execute a piped command', function (done) {
+      it('should execute a piped command', function (t, done) {
         exec('say cheese | reverse', done, function () {
           assert.equal(getStdout(), 'eseehc')
           done()
         })
       })
 
-      it('should execute a piped command with double quoted pipe character', function (done) {
+      it('should execute a piped command with double quoted pipe character', function (t, done) {
         exec('say "cheese|meat" | reverse', done, function () {
           assert.equal(getStdout(), 'taem|eseehc')
           done()
         })
       })
 
-      it('should execute a piped command with single quoted pipe character', function (done) {
+      it('should execute a piped command with single quoted pipe character', function (t, done) {
         exec("say 'cheese|meat' | reverse", done, function () {
           assert.equal(getStdout(), 'taem|eseehc')
           done()
         })
       })
 
-      it('should execute a piped command with angle quoted pipe character', function (done) {
+      it('should execute a piped command with angle quoted pipe character', function (t, done) {
         exec('say `cheese|meat` | reverse', done, function () {
           assert.equal(getStdout(), 'taem|eseehc')
           done()
         })
       })
 
-      it('should execute multiple piped commands', function (done) {
+      it('should execute multiple piped commands', function (t, done) {
         exec('say donut | reverse | reverse | array', done, function () {
           assert.equal(getStdout(), 'd,o,n,u,t')
           done()
@@ -277,70 +278,70 @@ describe('integration tests:', function () {
     })
 
     describe('command parsing and validation', function () {
-      it('should parse double quoted command option', function (done) {
+      it('should parse double quoted command option', function (t, done) {
         exec("say \"Vorpal's command parsing is great\"", done, function () {
           assert.equal(getStdout(), "Vorpal's command parsing is great")
           done()
         })
       })
 
-      it('should parse single quoted command option', function (done) {
+      it('should parse single quoted command option', function (t, done) {
         exec("say 'My name is \"Vorpal\"', done", done, function () {
           assert.equal(getStdout(), 'My name is "Vorpal"')
           done()
         })
       })
 
-      it('should parse angle quoted command option', function (done) {
+      it('should parse angle quoted command option', function (t, done) {
         exec("say `He's \"Vorpal\"`, done", done, function () {
           assert.equal(getStdout(), "He's \"Vorpal\"")
           done()
         })
       })
 
-      it('should parse double quotes pipe character in command argument', function (done) {
+      it('should parse double quotes pipe character in command argument', function (t, done) {
         exec('say "(vorpal|Vorpal)", done', done, function () {
           assert.equal(getStdout(), '(vorpal|Vorpal)')
           done()
         })
       })
 
-      it('should parse single quoted pipe character in command argument', function (done) {
+      it('should parse single quoted pipe character in command argument', function (t, done) {
         exec("say '(vorpal|Vorpal)', done", done, function () {
           assert.equal(getStdout(), '(vorpal|Vorpal)')
           done()
         })
       })
 
-      it('should parse angle quoted pipe character in command argument', function (done) {
+      it('should parse angle quoted pipe character in command argument', function (t, done) {
         exec('say `(vorpal|Vorpal)`, done', done, function () {
           assert.equal(getStdout(), '(vorpal|Vorpal)')
           done()
         })
       })
 
-      it('should execute a command when not passed an optional variable', function (done) {
+      it('should execute a command when not passed an optional variable', function (t, done) {
         exec('optional', done, function () {
           assert.equal(getStdout(), '')
           done()
         })
       })
 
-      it('should understand --no-xxx options', function (done) {
+      it('should understand --no-xxx options', function (t, done) {
         exec('i want --no-cheese', done, function () {
           assert.equal(getStdout(), 'false')
           done()
         })
       })
 
-      it('should parse hyphenated options', function (done) {
+      it('should parse hyphenated options', function (t, done) {
         exec('hyphenated-option --dry-run', done, function () {
           assert.equal(getStdout(), 'true')
           done()
         })
       })
 
-      it('should use util.parseArgs through the .types() method', function (done) {
+      it('should use util.parseArgs through the .types() method', function (t, done) {
         exec('typehappy --numberify 4 -s 5', done, function (err, data) {
           assert.equal(err, undefined)
           assert.equal(data.options.numberify, 4)
@@ -349,7 +350,7 @@ describe('integration tests:', function () {
         })
       })
 
-      it('should ignore variadic arguments when not warranted', function (done) {
+      it('should ignore variadic arguments when not warranted', function (t, done) {
         exec('required something with extra something', done, function (err, data) {
           assert.equal(err, undefined)
           assert.equal(data.arg, 'something')
@@ -357,7 +358,7 @@ describe('integration tests:', function () {
         })
       })
 
-      it('should receive variadic arguments as array', function (done) {
+      it('should receive variadic arguments as array', function (t, done) {
         exec('variadic pepperoni olives pineapple anchovies', done, function (err, data) {
           assert.equal(err, undefined)
           assert.equal(data.pizza, 'pepperoni')
@@ -368,7 +369,7 @@ describe('integration tests:', function () {
         })
       })
 
-      it('should receive variadic arguments as array when quoted', function (done) {
+      it('should receive variadic arguments as array when quoted', function (t, done) {
         exec('variadic "pepperoni" \'olives\' `pineapple` anchovies', done, function (err, data) {
           assert.equal(err, undefined)
           assert.equal(data.pizza, 'pepperoni')
@@ -379,7 +380,7 @@ describe('integration tests:', function () {
         })
       })
 
-      it('should accept variadic args as the first arg', function (done) {
+      it('should accept variadic args as the first arg', function (t, done) {
         exec('variadic-pizza olives pineapple anchovies', done, function (err, data) {
           assert.equal(err, undefined)
           assert.equal(data.ingredients[0], 'olives')
@@ -389,7 +390,7 @@ describe('integration tests:', function () {
         })
       })
 
-      it('should parse variadic arguments properly with falsy values (variadic last)', function (done) {
+      it('should parse variadic arguments properly with falsy values (variadic last)', function (t, done) {
         exec('variadic pepperoni 0 1 olives ', done, function (err, data) {
           assert.equal(err, undefined)
           assert.equal(data.pizza, 'pepperoni')
@@ -400,7 +401,7 @@ describe('integration tests:', function () {
         })
       })
 
-      it('should parse variadic arguments properly with falsy values (variadic only)', function (done) {
+      it('should parse variadic arguments properly with falsy values (variadic only)', function (t, done) {
         exec('variadic-pizza 0 1 olives ', done, function (err, data) {
           assert.equal(err, undefined)
           assert.equal(data.ingredients[0], 0)
@@ -410,7 +411,7 @@ describe('integration tests:', function () {
         })
       })
 
-      it('should accept a lot of arguments', function (done) {
+      it('should accept a lot of arguments', function (t, done) {
         exec('cmd that has a ton of arguments', done, function (err, data) {
           assert.equal(err, undefined)
           assert.equal(data.with, 'that')
@@ -423,28 +424,28 @@ describe('integration tests:', function () {
         })
       })
 
-      it('should show help when not passed a required variable', function (done) {
+      it('should show help when not passed a required variable', function (t, done) {
         exec('required', done, function () {
           assert.ok(getStdout().indexOf('Missing required argument') > -1)
           done()
         })
       })
 
-      it('should show help when passed an unknown option', function (done) {
+      it('should show help when passed an unknown option', function (t, done) {
         exec('unknown-option --unknown-opt', done, function () {
           assert.ok(getStdout().indexOf('Invalid option') > -1)
           done()
         })
       })
 
-      it('should execute a command when passed a required variable', function (done) {
+      it('should execute a command when passed a required variable', function (t, done) {
         exec('required foobar', done, function () {
           assert.equal(getStdout(), 'foobar')
           done()
         })
       })
 
-      it('should show help when passed an invalid command', function (done) {
+      it('should show help when passed an invalid command', function (t, done) {
         exec('gooblediguck', done, function () {
           assert.ok(getStdout().indexOf('Invalid Command. Showing Help:') > -1)
           done()
@@ -453,7 +454,7 @@ describe('integration tests:', function () {
     })
 
     describe('mode', function () {
-      it('should enter REPL mode', function (done) {
+      it('should enter REPL mode', function (t, done) {
         vorpal.exec('repl').then(function () {
           assert.ok(getStdout().includes('Entering REPL Mode'))
           done()
@@ -462,7 +463,7 @@ describe('integration tests:', function () {
         })
       })
 
-      it('should execute arbitrary JS', function (done) {
+      it('should execute arbitrary JS', function (t, done) {
         vorpal.exec('3*9').then(function (data) {
           assert.equal(parseFloat(data) || '', 27)
           assert.equal(parseFloat(getStdout()), 27)
@@ -472,7 +473,7 @@ describe('integration tests:', function () {
         })
       })
 
-      it('should exit REPL mode properly', function (done) {
+      it('should exit REPL mode properly', function (t, done) {
         vorpal.exec('exit').then(function () {
           getStdout()
           return vorpal.exec('help')
@@ -555,7 +556,7 @@ describe('integration tests:', function () {
     })
 
     describe('cancel', function () {
-      it('should be able to call cancel in action', function (done) {
+      it('should be able to call cancel in action', function (t, done) {
         vorpal
           .command('SelfCancel', 'This command cancels itself.')
           .action(function () {
@@ -569,7 +570,7 @@ describe('integration tests:', function () {
         vorpal.exec('SelfCancel')
       })
 
-      it('should handle event client_command_cancelled', function (done) {
+      it('should handle event client_command_cancelled', function (t, done) {
         vorpal.on('client_command_cancelled', function () {
           assert.ok(true)
           done()
@@ -584,35 +585,44 @@ describe('integration tests:', function () {
     })
 
     describe('events', function () {
-      it('should handle event command_registered', function (done) {
-        vorpal.on('command_registered', function () {
+      it('should handle event command_registered', function (t, done) {
+        const handler = function () {
           assert.ok(true)
+          vorpal.removeListener('command_registered', handler)
           done()
-        }).command('newMethod')
+        }
+        vorpal.on('command_registered', handler)
+        vorpal.command('newMethod')
       })
 
-      it('should handle event client_command_executed', function (done) {
-        vorpal.on('client_command_executed', function () {
+      it('should handle event client_command_executed', function (t, done) {
+        const handler = function () {
           assert.ok(true)
+          vorpal.removeListener('client_command_executed', handler)
           done()
-        })
+        }
+        vorpal.on('client_command_executed', handler)
         vorpal.exec('help')
       })
 
-      it('should handle event client_command_error', function (done) {
-        vorpal.on('client_command_error', function () {
+      it('should handle event client_command_error', function (t, done) {
+        const handler = function () {
           assert.ok(true)
+          vorpal.removeListener('client_command_error', handler)
           done()
-        })
-        vorpal.exec('fail me plzz')
+        }
+        vorpal.on('client_command_error', handler)
+        vorpal.exec('fail me plzz').catch(function () {})
       })
 
-      it('should handle piped event client_command_error', function (done) {
+      it('should handle piped event client_command_error', function (t, done) {
         const vorpal2 = new Vorpal()
-        vorpal2.on('client_command_error', function () {
+        const handler = function () {
           assert.ok(true)
+          vorpal2.removeListener('client_command_error', handler)
           done()
-        })
+        }
+        vorpal2.on('client_command_error', handler)
           .command('fail')
           .action(function (args, cb) {
             cb('failed')

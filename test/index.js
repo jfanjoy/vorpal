@@ -1,3 +1,4 @@
+import { describe, it } from 'node:test'
 import Vorpal from '../lib/vorpal.js'
 import assert from 'node:assert/strict'
 
@@ -22,7 +23,7 @@ describe('vorpal', function () {
   })
 
   describe('mode context', function () {
-    it('parent should have the same context in init and action', function (done) {
+    it('parent should have the same context in init and action', function (t, done) {
       const vorpal = new Vorpal()
       let initCtx
       vorpal

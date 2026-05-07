@@ -1,3 +1,4 @@
+import { describe, it } from 'node:test'
 import Vorpal from '../lib/vorpal.js'
 import assert from 'node:assert/strict'
 

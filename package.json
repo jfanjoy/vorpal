@@ -8,7 +8,7 @@
     ".": "./lib/vorpal.js"
   },
   "scripts": {
-    "test": "mocha test/index.js test/vorpal.js test/autocomplete.js test/store.js test/util-test.js test/integration.js"
+    "test": "node --test test/index.js test/vorpal.js test/autocomplete.js test/store.js test/util-test.js test/integration.js"
   },
   "repository": {
     "type": "git",
@@ -29,7 +29,9 @@
     "prompt"
   ],
   "author": "John Fanjoy <john@sed.ninja>",
-  "contributors": ["dthree"],
+  "contributors": [
+    "dthree"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jfanjoy/vorpal/issues"
@@ -44,8 +46,5 @@
   },
   "engines": {
     "node": ">= 18.0.0"
-  },
-  "devDependencies": {
-    "mocha": "^11.7.5"
   }
 }

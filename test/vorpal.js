@@ -1,3 +1,4 @@
+import { describe, it, beforeEach } from 'node:test'
 import Vorpal from '../lib/vorpal.js'
 import assert from 'node:assert/strict'
 import intercept from '../lib/intercept.js'
@@ -15,7 +16,7 @@ function obj (inp) {
   return JSON.stringify(inp)
 }
 
-const vorpal = Vorpal()
+const vorpal = new Vorpal()
 vorpal
   .command('foo [args...]')
   .option('-b, --bool')
@@ -324,7 +325,7 @@ describe('descriptors', function () {
   let instance
 
   beforeEach(function () {
-    instance = Vorpal()
+    instance = new Vorpal()
   })
 
   it('sets the version', function () {
