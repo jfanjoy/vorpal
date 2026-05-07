@@ -6,6 +6,7 @@ export default function (vorpal) {
       cb()
     })
     .action(function (command, cb) {
+      // eslint-disable-next-line no-eval
       const res = eval(command)
       this.log(res)
       cb(res)
@@ -29,7 +30,7 @@ export default function (vorpal) {
     })
 
   vorpal.command('prompt default <defaultValue>', 'action prompt')
-    .action(function (args, cb) {
+    .action(function (args) {
       return this.prompt([
         {
           type: 'input',
@@ -202,7 +203,7 @@ export default function (vorpal) {
         if (args.arg === 'not') {
           resolve('we are happy')
         } else {
-          reject('we are not happy.')
+          reject(new Error('we are not happy.'))
         }
       })
     })

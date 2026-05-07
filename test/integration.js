@@ -1,16 +1,13 @@
 import { describe, it, before, after, afterEach } from 'node:test'
 import Vorpal from '../lib/vorpal.js'
 import assert from 'node:assert/strict'
-import intercept from '../lib/intercept.js'
 import fs from 'node:fs'
 import commands from './util/server.js'
 
-let _all = ''
 let _stdout = ''
 
 const onStdout = function (str) {
   _stdout += str
-  _all += str
   return ''
 }
 
@@ -120,7 +117,7 @@ describe('integration tests:', function () {
     })
 
     afterEach(function () {
-      _all += getStdout()
+      getStdout()
     })
 
     const exec = function (cmd, done, cb) {
@@ -625,7 +622,7 @@ describe('integration tests:', function () {
         vorpal2.on('client_command_error', handler)
           .command('fail')
           .action(function (args, cb) {
-            cb('failed')
+            cb(new Error('failed'))
           })
         vorpal2.exec('help | fail | help')
       })

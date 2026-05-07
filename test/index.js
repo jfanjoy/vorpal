@@ -17,7 +17,7 @@ describe('vorpal', function () {
     })
 
     it('should expose parseArgs', function () {
-      const result = vorpal.parse(['a', 'b', 'foo', 'bar', '-r'], {use: 'minimist'})
+      const result = vorpal.parse(['a', 'b', 'foo', 'bar', '-r'], { use: 'minimist' })
       assert.equal(result.values.r, true)
     })
   })

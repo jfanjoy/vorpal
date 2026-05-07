@@ -3,11 +3,9 @@ import Vorpal from '../lib/vorpal.js'
 import assert from 'node:assert/strict'
 import intercept from '../lib/intercept.js'
 
-let stdout = ''
 let unmute
 const mute = function () {
   unmute = intercept(function (str) {
-    stdout += str
     return ''
   })
 }
@@ -110,16 +108,19 @@ describe('argument parsing', function () {
   })
 
   it('should normalize key=value pairs', function () {
-    const fixture = obj({ options: {},
+    const fixture = obj({
+      options: {},
       req: "a='b'",
       opt: "c='d and e'",
-      variadic: ["wombat='true'", "a", "fizz='buzz'", "hello='goodbye'"] })
+      variadic: ["wombat='true'", 'a', "fizz='buzz'", "hello='goodbye'"]
+    })
     assert.equal(obj(vorpal.execSync("multiple a='b' c=\"d and e\" wombat=true a fizz='buzz' \"hello='goodbye'\"")), fixture)
   })
 
   it('should NOT normalize key=value pairs when isCommandArgKeyPairNormalized is false', function () {
-    const fixture = obj({ options: {},
-      req: "hello=world",
+    const fixture = obj({
+      options: {},
+      req: 'hello=world',
       opt: 'hello="world"',
       variadic: ['hello=`world`']
     })
@@ -134,7 +135,7 @@ describe('argument parsing', function () {
   })
 
   it('should parse command with undefine in it as invalid', function () {
-    const fixture = obj("Invalid command.")
+    const fixture = obj('Invalid command.')
     assert.equal(obj(vorpal.execSync('has undefine in it')), fixture)
   })
 })
@@ -268,7 +269,7 @@ describe('option parsing', function () {
     })
 
     it('should throw help on a required option without an arg', function () {
-      const fixture = "\n  Missing required value for option --required. Showing Help:"
+      const fixture = '\n  Missing required value for option --required. Showing Help:'
       mute()
       assert.equal(vorpal.execSync('foo -r'), fixture)
       unmute()
@@ -292,7 +293,7 @@ describe('option parsing', function () {
     })
 
     it('should return help on a required option', function () {
-      const fixture = "\n  Missing required value for option --required. Showing Help:"
+      const fixture = '\n  Missing required value for option --required. Showing Help:'
       mute()
       assert.equal(vorpal.execSync('foo --no-required cows'), fixture)
       unmute()
