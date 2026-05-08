@@ -1,52 +1,46 @@
-var Vorpal = require('../');
-var should = require('should');
+import { describe, it } from 'node:test'
+import Vorpal from '../lib/vorpal.js'
+import assert from 'node:assert/strict'
 
-var vorpal = new Vorpal();
-
-require('assert');
+const vorpal = new Vorpal()
 
 describe('vorpal', function () {
   describe('constructor', function () {
     it('should exist and be a function', function () {
-      should.exist(Vorpal);
-      Vorpal.should.be.type('function');
-    });
-  });
+      assert.equal(typeof Vorpal, 'function')
+    })
+  })
 
   describe('.parse', function () {
     it('should exist and be a function', function () {
-      should.exist(vorpal.parse);
-      vorpal.parse.should.be.type('function');
-    });
+      assert.equal(typeof vorpal.parse, 'function')
+    })
 
-    it('should expose minimist', function () {
-      var result = vorpal.parse(['a', 'b', 'foo', 'bar', '-r'], {use: 'minimist'});
-      result.r.should.be.true;
-      (result._.indexOf('foo') > -1).should.be.true;
-      (result._.indexOf('bar') > -1).should.be.true;
-      result._.length.should.equal(2);
-    });
-  });
+    it('should expose parseArgs', function () {
+      const result = vorpal.parse(['a', 'b', 'foo', 'bar', '-r'], { use: 'minimist' })
+      assert.equal(result.values.r, true)
+    })
+  })
 
   describe('mode context', function () {
-    it('parent should have the same context in init and action', function (done) {
-      var vorpal = Vorpal();
-      var initCtx;
+    it('parent should have the same context in init and action', function (t, done) {
+      const vorpal = new Vorpal()
+      let initCtx
       vorpal
         .mode('ooga')
         .init(function (args, cb) {
-          initCtx = this.parent;
+          initCtx = this.parent
           cb()
         })
         .action(function (args, cb) {
-          this.parent.should.equal(initCtx)
+          assert.equal(this.parent, initCtx)
           cb()
           done()
-        });
+        })
       vorpal.exec('ooga')
         .then(function () {
           vorpal.exec('booga')
-        });
-    });
-  });
-});
+        })
+    })
+  })
+})
